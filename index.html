@@ -9,7 +9,7 @@
     <style>
       #map{
         height:50%;
-        width:50%;
+        width:100%;
       }
     </style>
   </head>
@@ -32,19 +32,19 @@
         <p class="h3">Show Country</p>
         <p style="font-weight: 300;">Enter the coordinates of your location and see your country.</p>
 
-        <div style="margin-left:auto;margin-right:auto;width:50%;" class="input-group-text mb-3">
+        <div style="margin-left:auto;margin-right:auto;width:100%;" class="input-group-text mb-3">
           <input type="number" class="form-control" placeholder="Latitude" id="lat">
           <input type="number" class="form-control" placeholder="Longitude" id="lng">
           <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" id="getLatLng">Show Country</button>
         </div>
 
-        <div style="padding:12px;margin-left:auto;margin-right:auto;width:50%;" class="input-group-text mb-3">
+        <div style="padding:12px;margin-left:auto;margin-right:auto;width:100%;" class="input-group-text mb-3">
           <p class="h5" style="margin-top:auto;margin-bottom:auto;">Your Country:</p>
           <span style="border:none;" class="input-group-text"></span>
           <p class="h5" style="margin-top:auto;margin-bottom:auto;" id="country">Turkey</p>
         </div>
 
-        <div style="margin-left:auto;margin-right:auto;width:50%;" id="map"></div>
+        <div style="margin-left:auto;margin-right:auto;width:100%;" id="map"></div>
         <script>
           let marker;
 
@@ -143,7 +143,7 @@
         <p style="font-weight: 300;">Enter the coordinates of your location or allow for permission to get the coordinates of your device and see your distance to the Moon's core.</p>
         <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" onclick="useLocation()" >Use Current Location</button>
         <p style="font-weight: 300;padding:10px;margin-bottom:0;">OR</p>
-        <div style="margin-left:auto;margin-right:auto;width:50%;" class="input-group-text mb-3">
+        <div style="margin-left:auto;margin-right:auto;width:100%;" class="input-group-text mb-3">
           <input type="number" class="form-control" placeholder="Latitude" id="lat2">
           <input type="number" class="form-control" placeholder="Longitude" id="lng2">
           <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" onclick="getDist()">Show Distance</button>
