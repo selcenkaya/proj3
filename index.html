@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CS 458 - Project 3</title>
+    <link href="../proj3/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      #map{
+        height:50%;
+        width:50%;
+      }
+    </style>
+  </head>
+
+  <body class="d-flex h-100 text-center text-white bg-dark">
+    <div style="max-width: 95em;" class="d-flex w-100 h-100 p-3 mx-auto flex-column">
+      <header class="mb-auto">
+        <h3 class="float-md-start mb-0">CS 458 - Project 3</h3>
+      </header>
+
+      <main class="px-3">
+        <!-- Welcome -->
+        <hr><br>
+        <p class="h1">Hello.</p>
+        <p class="lead">Welcome to our project.</p>
+
+
+        <!-- Show Country -->
+        <br><hr><br>
+        <p class="h3">Show Country</p>
+        <p style="font-weight: 300;">Enter the coordinates of your location and see your country.</p>
+
+        <div style="margin-left:auto;margin-right:auto;width:50%;" class="input-group-text mb-3">
+          <input type="number" class="form-control" placeholder="Latitude" id="lat">
+          <input type="number" class="form-control" placeholder="Longitude" id="lng">
+          <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" id="getLatLng">Show Country</button>
+        </div>
+
+        <div style="padding:12px;margin-left:auto;margin-right:auto;width:50%;" class="input-group-text mb-3">
+          <p class="h5" style="margin-top:auto;margin-bottom:auto;">Your Country:</p>
+          <span style="border:none;" class="input-group-text"></span>
+          <p class="h5" style="margin-top:auto;margin-bottom:auto;" id="country">Turkey</p>
+        </div>
+
+        <div style="margin-left:auto;margin-right:auto;width:50%;" id="map"></div>
+        <script>
+          let marker;
+
+          function initMap( lat = 38.874275, lng = 34.748524 ) {
+            const map = new google.maps.Map(document.getElementById("map"), {
+              zoom: 5,
+              center: {lat, lng},
+            });
+            const geocoder = new google.maps.Geocoder();
+
+            marker = new google.maps.Marker({
+              position: new google.maps.LatLng(lat, lng),
+              map: map,
+            });
+
+            document.getElementById("getLatLng").addEventListener("click", () => {
+              geocodeLatLng(geocoder, map);
+            });
+          }
+
+          function geocodeLatLng(geocoder, map) {
+            let lat = document.getElementById("lat").value;
+            let lng = document.getElementById("lng").value;
+            latlng = new google.maps.LatLng(lat, lng);
+
+            geocoder
+                    .geocode({ location: latlng })
+                    .then((response) => {
+                      if (response.results[0]) {
+                        marker.setMap(null);
+                        marker = null;
+                        marker = new google.maps.Marker({
+                          position: latlng,
+                          map: map,
+                        });
+                        map.panTo(latlng);
+                        let flag = 0;
+                        for( let i = 0; i < response.results.length; i++ ) {
+                          if( response.results[i].types[0] == "country" ) {
+                            document.getElementById("country").innerHTML = response.results[i].address_components[0].long_name;
+                            flag = 1;
+                          }
+                        }
+                        if( flag == 0 ) {
+                          document.getElementById("country").innerHTML = "No Country";
+                        }
+                      } else {
+                        window.alert("No results found");
+                      }
+                    })
+                    .catch((e) => window.alert("Geocoder failed due to: " + e));
+          }
+
+          window.initMap = initMap;
+
+        </script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLRukB8f6tAlLt8qjBc3w0mF7fuGdhKRU&callback=initMap&language=en"></script>
+
+
+        <!-- North Pole -->
+        <br><hr><br>
+        <p class="h3">Show Distance to the North Pole</p>
+        <p style="font-weight: 300;">Allow for permission to get the coordinates of your device and see your distance to the North Pole.</p>
+
+        <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" onclick="getLocation()" >Allow Access</button>
+        <br><br>
+        <p style="font-weight: 300;" id="loc">Location: -</p>
+        <script>
+          let x = document.getElementById("loc");
+          function getLocation() {
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+              x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+          }
+
+          function showPosition(position) {
+            x.innerHTML = "Location: " + position.coords.latitude + ", " + position.coords.longitude;
+          }
+        </script>
+
+        <!-- Moon's Core -->
+        <br><hr><br>
+        <p class="h3">Show Distance to the Moon's Core</p>
+        <p style="font-weight: 300;">Enter the coordinates of your location or allow for permission to get the coordinates of your device and see your distance to the Moon's core.</p>
+
+        <!-- Information -->
+        <br><hr>
+        <footer class="mt-auto text-muted">
+          <p style="margin-bottom:0;">Made by Selcen Kaya, Mert Laleci and Şebnem Uslu.</p>
+          <p>Access the source code <a href="https://github.com/selcenkaya/proj3" class="text-white-50" target="_blank">here</a>.</p>
+        </footer>
+        <br>
+      </main>
+
+    </div>
+
+  </body>
+</html>
