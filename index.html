@@ -148,6 +148,8 @@
           <input type="number" class="form-control" placeholder="Longitude" id="lng2">
           <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" onclick="getDist()">Show Distance</button>
         </div>
+        <p class="h5" id="moon">Distance to the Moon's Core: -</p>
+
 
         <script>
           function useLocation() {
@@ -165,33 +167,37 @@
           function getDist() {
             let lat = document.getElementById("lat2").value;
             let lng = document.getElementById("lng2").value;
-            var date = new Date();
-            getMoonPosition(date, lat, lng);
+            let date = new Date();
+            let dist = getMoonPosition(date, lat, lng);
+            document.getElementById("moon").innerHTML = "Distance to the Moon's Core: " + dist + " km";
+          }
+
+          // CODE BELOW IS FROM SUNCALC
+
+          let rad = (Math.PI/180);
+
+          let dayMs = 1000 * 60 * 60 * 24;
+          let J1970 = 2440588;
+          let J2000 = 2451545;
+
+          let e = rad * 23.4397;
+
+          function toJulian(date) { return date.valueOf() / dayMs - 0.5 + J1970; }
+          function toDays(date)   { return toJulian(date) - J2000; }
+
+          function moonCoords(d) { // geocentric ecliptic coordinates of the moon
+            let M = rad * (134.963 + 13.064993 * d), // mean anomaly
+                    dt = 385001 - 20905 * Math.cos(M);  // distance to the moon in km
+
+            return dt;
           }
 
           function getMoonPosition(date, lat, lng) {
-            // TODO
-            var lw  = rad * -lng,
-                    phi = rad * lat,
-                    d   = toDays(date),
+            let d   = toDays(date);
+            let c = moonCoords(d);
 
-                    c = moonCoords(d),
-                    H = siderealTime(d, lw) - c.ra,
-                    h = altitude(H, phi, c.dec),
-                    // formula 14.1 of "Astronomical Algorithms" 2nd edition by Jean Meeus (Willmann-Bell, Richmond) 1998.
-                    pa = atan(sin(H), tan(phi) * cos(c.dec) - sin(c.dec) * cos(H));
-
-            h = h + astroRefraction(h); // altitude correction for refraction
-
-            return {
-              azimuth: azimuth(H, phi, c.dec),
-              altitude: h,
-              distance: c.dist,
-              parallacticAngle: pa
-            };
-          };
-
-
+            return  c;
+          }
         </script>
 
 
