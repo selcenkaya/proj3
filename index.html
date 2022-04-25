@@ -112,6 +112,8 @@
         <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" onclick="getLocation()" >Allow Access</button>
         <br><br>
         <p style="font-weight: 300;" id="loc">Location: -</p>
+        <p class="h5" id="dist">Distance to the North Pole: -</p>
+
         <script>
           let x = document.getElementById("loc");
           function getLocation() {
@@ -124,6 +126,13 @@
 
           function showPosition(position) {
             x.innerHTML = "Location: " + position.coords.latitude + ", " + position.coords.longitude;
+            getDistance(position.coords.latitude, position.coords.longitude);
+          }
+
+          // North Pole - Latitude: 90.0000 Longitude: 0.0000.
+          function getDistance(lat, lng) {
+            let dist = 2 * 6371 * Math.asin( Math.sqrt( Math.pow( Math.sin( (( 90 - lat ) * (Math.PI/180) ) / 2 ), 2 ) ) ); // + ( Math.cos( Math.PI/2 ) * Math.cos( lat * (Math.PI/180)) * Math.pow( Math.sin( lng / 2 ), 2 ) )
+            document.getElementById("dist").innerHTML = "Distance to the North Pole: " + dist + " km";
           }
         </script>
 
