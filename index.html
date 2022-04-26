@@ -72,8 +72,9 @@
             let lat = document.getElementById("lat").value;
             let lng = document.getElementById("lng").value;
 
-            if ( (lat == "" & lng == "") | lat < -90 | lat > 90 | lng < -180 | lng > 180 ) {
+            if ( lat == "" | lng == "" | lat < -90 | lat > 90 | lng < -180 | lng > 180 ) {
               document.getElementById("error").innerHTML = "Please enter valid coordinates."
+              document.getElementById("country").innerHTML = "-";
             } else {
               latlng = new google.maps.LatLng(lat, lng);
 
@@ -101,9 +102,13 @@
                           }
                         } else {
                           document.getElementById("error").innerHTML = "No results found";
+                          document.getElementById("country").innerHTML = "-";
                         }
                       })
-                      .catch((e) => document.getElementById("error").innerHTML = "Geocoder failed due to: " + e);
+                      .catch((e) => {
+                        document.getElementById("error").innerHTML = "Geocoder failed due to: " + e;
+                        document.getElementById("country").innerHTML = "-";
+                      });
             }
           }
 
