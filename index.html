@@ -201,7 +201,7 @@
           function getDist() {
             let lat = document.getElementById("lat2").value;
             let lng = document.getElementById("lng2").value;
-            if ( (lat == "" & lng == "") | lat < -90 | lat > 90 | lng < -180 | lng > 180 ) {
+            if ( lat == "" | lng == "" | lat < -90 | lat > 90 | lng < -180 | lng > 180 ) {
               document.getElementById("error4").innerHTML = "Please enter valid coordinates.";
               document.getElementById("moon").innerHTML = "Distance to the Moon's Core: -";
             }
