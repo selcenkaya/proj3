@@ -38,6 +38,8 @@
           <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" id="getLatLng">Show Country</button>
         </div>
 
+        <p style="font-weight:300;color: #e83d3d;" id="error"></p>
+
         <div style="padding:12px;margin-left:auto;margin-right:auto;width:100%;" class="input-group-text mb-3">
           <p class="h5" style="margin-top:auto;margin-bottom:auto;">Your Country:</p>
           <span style="border:none;" class="input-group-text"></span>
@@ -45,6 +47,7 @@
         </div>
 
         <div style="margin-left:auto;margin-right:auto;width:100%;" id="map"></div>
+
         <script>
           let marker;
 
@@ -68,34 +71,40 @@
           function geocodeLatLng(geocoder, map) {
             let lat = document.getElementById("lat").value;
             let lng = document.getElementById("lng").value;
-            latlng = new google.maps.LatLng(lat, lng);
 
-            geocoder
-                    .geocode({ location: latlng })
-                    .then((response) => {
-                      if (response.results[0]) {
-                        marker.setMap(null);
-                        marker = null;
-                        marker = new google.maps.Marker({
-                          position: latlng,
-                          map: map,
-                        });
-                        map.panTo(latlng);
-                        let flag = 0;
-                        for( let i = 0; i < response.results.length; i++ ) {
-                          if( response.results[i].types[0] == "country" ) {
-                            document.getElementById("country").innerHTML = response.results[i].address_components[0].long_name;
-                            flag = 1;
+            if ( (lat == "" & lng == "") | lat < -90 | lat > 90 | lng < -180 | lng > 180 ) {
+              document.getElementById("error").innerHTML = "Please enter valid coordinates."
+            } else {
+              latlng = new google.maps.LatLng(lat, lng);
+
+              geocoder
+                      .geocode({location: latlng})
+                      .then((response) => {
+                        if (response.results[0]) {
+                          marker.setMap(null);
+                          marker = null;
+                          marker = new google.maps.Marker({
+                            position: latlng,
+                            map: map,
+                          });
+                          map.panTo(latlng);
+                          document.getElementById("error").innerHTML = "";
+                          let flag = 0;
+                          for (let i = 0; i < response.results.length; i++) {
+                            if (response.results[i].types[0] == "country") {
+                              document.getElementById("country").innerHTML = response.results[i].address_components[0].long_name;
+                              flag = 1;
+                            }
                           }
+                          if (flag == 0) {
+                            document.getElementById("country").innerHTML = "No Country";
+                          }
+                        } else {
+                          document.getElementById("error").innerHTML = "No results found";
                         }
-                        if( flag == 0 ) {
-                          document.getElementById("country").innerHTML = "No Country";
-                        }
-                      } else {
-                        window.alert("No results found");
-                      }
-                    })
-                    .catch((e) => window.alert("Geocoder failed due to: " + e));
+                      })
+                      .catch((e) => document.getElementById("error").innerHTML = "Geocoder failed due to: " + e);
+            }
           }
 
           window.initMap = initMap;
@@ -111,22 +120,31 @@
 
         <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" onclick="getLocation()" >Use Current Location</button>
         <br><br>
+        <p style="font-weight:300;color: #e83d3d;" id="error2"></p>
         <p style="font-weight: 300;" id="loc">Location: -</p>
         <p class="h5" id="dist">Distance to the North Pole: -</p>
 
         <script>
           let x = document.getElementById("loc");
+
           function getLocation() {
             if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(showPosition);
+              navigator.geolocation.getCurrentPosition(showPosition, giveError);
             } else {
               x.innerHTML = "Geolocation is not supported by this browser.";
             }
           }
 
           function showPosition(position) {
+            document.getElementById("error2").innerHTML = "";
             x.innerHTML = "Location: " + position.coords.latitude + ", " + position.coords.longitude;
             getDistance(position.coords.latitude, position.coords.longitude);
+          }
+
+          function giveError() {
+            document.getElementById("error2").innerHTML = "Permission was denied.";
+            x.innerHTML = "Location: -";
+            document.getElementById("dist").innerHTML = "Distance to the North Pole: -";
           }
 
           // North Pole - Latitude: 90.0000 Longitude: 0.0000.
@@ -141,35 +159,53 @@
         <br><hr><br>
         <p class="h3">Show Distance to the Moon's Core</p>
         <p style="font-weight: 300;">Enter the coordinates of your location or allow for permission to get the coordinates of your device and see your distance to the Moon's core.</p>
+
         <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" onclick="useLocation()" >Use Current Location</button>
-        <p style="font-weight: 300;padding:10px;margin-bottom:0;">OR</p>
+        <p style="font-weight:300;color: #e83d3d;margin-top:25px;" id="error3"></p>
+        <p style="font-weight: 300;">OR</p>
+
         <div style="margin-left:auto;margin-right:auto;width:100%;" class="input-group-text mb-3">
           <input type="number" class="form-control" placeholder="Latitude" id="lat2">
           <input type="number" class="form-control" placeholder="Longitude" id="lng2">
           <button style="background-color: #62a0ff;border-color: #62a0ff;" class="btn btn-primary" type="submit" onclick="getDist()">Show Distance</button>
         </div>
+        <p style="font-weight:300;color: #e83d3d;" id="error4"></p>
         <p class="h5" id="moon">Distance to the Moon's Core: -</p>
-
 
         <script>
           function useLocation() {
             if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(showPosition2);
+              navigator.geolocation.getCurrentPosition(showPosition2, giveError2);
             }
           }
 
           function showPosition2(position) {
+            document.getElementById("error3").innerHTML = "";
             document.getElementById("lat2").value = position.coords.latitude;
             document.getElementById("lng2").value = position.coords.longitude;
             getDist();
           }
 
+          function giveError2() {
+            document.getElementById("error3").innerHTML = "Permission was denied.";
+            document.getElementById("lat2").value = "";
+            document.getElementById("lng2").value = "";
+            document.getElementById("moon").innerHTML = "Distance to the Moon's Core: -";
+          }
+
           function getDist() {
             let lat = document.getElementById("lat2").value;
             let lng = document.getElementById("lng2").value;
-            let date = new Date();
-            let dist = getMoonPosition(date, lat, lng);
-            document.getElementById("moon").innerHTML = "Distance to the Moon's Core: " + dist + " km";
+            if ( (lat == "" & lng == "") | lat < -90 | lat > 90 | lng < -180 | lng > 180 ) {
+              document.getElementById("error4").innerHTML = "Please enter valid coordinates.";
+              document.getElementById("moon").innerHTML = "Distance to the Moon's Core: -";
+            }
+            else {
+              document.getElementById("error4").innerHTML = "";
+              let date = new Date();
+              let dist = getMoonPosition(date, lat, lng);
+              document.getElementById("moon").innerHTML = "Distance to the Moon's Core: " + dist + " km";
+            }
           }
 
           // CODE BELOW IS FROM SUNCALC
@@ -185,18 +221,41 @@
           function toJulian(date) { return date.valueOf() / dayMs - 0.5 + J1970; }
           function toDays(date)   { return toJulian(date) - J2000; }
 
+          function siderealTime(d, lw) { return rad * (280.16 + 360.9856235 * d) - lw; }
+          function rightAscension(l, b) { return Math.atan2(Math.sin(l) * Math.cos(e) - Math.tan(b) * Math.sin(e), Math.cos(l)); }
+          function declination(l, b)    { return Math.asin(Math.sin(b) * Math.cos(e) + Math.cos(b) * Math.sin(e) * Math.sin(l)); }
+
           function moonCoords(d) { // geocentric ecliptic coordinates of the moon
-            let M = rad * (134.963 + 13.064993 * d), // mean anomaly
+
+            let L = rad * (218.316 + 13.176396 * d), // ecliptic longitude
+                    M = rad * (134.963 + 13.064993 * d), // mean anomaly
+                    F = rad * (93.272 + 13.229350 * d),  // mean distance
+
+                    l  = L + rad * 6.289 * Math.sin(M), // longitude
+                    b  = rad * 5.128 * Math.sin(F),     // latitude
                     dt = 385001 - 20905 * Math.cos(M);  // distance to the moon in km
 
-            return dt;
+            return {
+              ra: rightAscension(l, b),
+              dec: declination(l, b),
+              dist: dt
+            };
           }
 
           function getMoonPosition(date, lat, lng) {
+            let lw  = rad * -lng;
+            let phi = rad * lat;
             let d   = toDays(date);
-            let c = moonCoords(d);
+            let coor = moonCoords(d);
+            let H = siderealTime(d, lw) - coor.ra;
+            let pa = Math.atan2(Math.sin(H), Math.tan(phi) * Math.cos(coor.dec) - Math.sin(coor.dec) * Math.cos(H));
 
-            return  c;
+            // pa is rad
+            let b = coor.dist + 8108;
+            let c = 6371;
+            let a = Math.pow(b, 2) + Math.pow(c, 2) - ( 2 * b * c * Math.cos(pa) );
+
+            return Math.sqrt(a);
           }
         </script>
 
@@ -208,6 +267,7 @@
           <p>Access the source code <a href="https://github.com/selcenkaya/proj3" class="text-white-50" target="_blank">here</a>.</p>
         </footer>
         <br>
+
       </main>
 
     </div>
